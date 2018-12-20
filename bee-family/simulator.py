@@ -8,7 +8,7 @@ from queen import QueenBee
 log = logging.getLogger("beelogger")
 
 # days
-SIMUATION_TIME = 100
+SIMUATION_TIME = 200
 
 def simulate(data_set):
 
@@ -39,17 +39,17 @@ def simulate(data_set):
     average_gather_to_weight_ratio = 0.1
 
     # gathering efficiency
-    c1 = 1 # nectar
+    c1 = 4 # nectar
     c2 = 1 # pollen
 
     # scout flights loss ratio
     c3 = 0.001
 
     # nectar demands
-    c4 = .1
-    c5 = .1
-    c6 = .1
-    c7 = .1
+    c4 = .3
+    c5 = .3
+    c6 = .3
+    c7 = .3
 
     # pollen demands (relative to nectar demands)
     c8 = .1
@@ -119,9 +119,9 @@ def simulate(data_set):
 
 
         # resource used on scout flights
-        hive.x10[day] = c3 * average_flights_num * average_gather_to_weight_ratio * \
-            (hive.y6Q[day] * hive.y6V[day])
-        hive.u11[day] -= hive.x10[day]
+        hive.x10[day] = c3 * average_flights_num * average_gather_to_weight_ratio * (hive.y6Q[day] * hive.y6V[day])
+        hive.u11[day], hive.x10[day] = distribute_resources(hive.u11[day], hive.x10[day])
+        #hive.u11[day] -= hive.x10[day]
 
         ## CALCULATE ACTUAL NECTAR INTAKE (priority based):
         if hive.u11[day] >= (hive.x11d[day] + hive.x12d[day] + hive.x13d[day] + hive.x14d[day]):
@@ -166,6 +166,12 @@ def simulate(data_set):
 
         hive.u1_1[day] = hive.u11[day] + hive.u12[day] - (hive.x11[day] + hive.x12[day] + hive.x13[day] + hive.x14[day])
         
+        #assert hive.u2P_1[day] > 0
+        #assert hive.u1_1[day] > 0
+        if (hive.u1_1[day] < 0 and hive.u2P_1[day] < 0):
+            log.warn("Bees might die : /")
+        
+
         # do not build new cluster TODO: implement this section
         hive.x15[day] = c10 * hive.u3[day]
         hive.x25[day] = c11 * hive.u3[day]
@@ -184,7 +190,8 @@ def simulate(data_set):
         else:
             # need to liquify some solid nectar
             hive.u11[day] = 0
-            hive.u12[day] += hive.u11_2[day]
+            hive.u12[day], _ = distribute_resources(hive.u12[day], -hive.u11_2[day])
+            # hive.u12[day] += hive.u11_2[day]
 
         hive.u2P[day], hive.x25[day] = distribute_resources(hive.u2P[day], hive.x25[day])
 

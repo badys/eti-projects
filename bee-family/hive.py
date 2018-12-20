@@ -110,7 +110,7 @@ class Hive:
 
 
         # make sure bee count across fractions is correct
-        # assert self.y3[day] == (self.y4[day] + self.y5[day] + self.y6Q[day] + self.y6V[day])
+        assert self.y3[day] == (self.y4[day] + self.y5[day] + self.y6Q[day] + self.y6V[day])
         
         # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
         # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
