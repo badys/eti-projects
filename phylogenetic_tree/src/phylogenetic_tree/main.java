@@ -19,7 +19,7 @@ public class main {
     private static final List<TreeNode> treeList = new ArrayList<>();
 
     public static void main(String[] args) {
-        String fileName = "C:\\Users\\piotr\\Desktop\\test.txt";
+        String fileName = "file.txt";
         readFile(fileName);
         showMenu();
     }
