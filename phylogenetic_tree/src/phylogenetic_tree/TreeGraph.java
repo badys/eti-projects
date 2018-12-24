@@ -23,12 +23,10 @@ public class TreeGraph {
     }
 
     private static void print(TreeNode root, String prefix, boolean isTail) {
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + root.getName());
+        System.out.println(prefix + (isTail ? "└── " : "├──" + String.valueOf(root.getWeight()) + "── " ) + root.getName());
         List<TreeNode> children = root.getChildren();
         if (children == null) return;
-        children.forEach(child -> {
-        print(child ,prefix + (isTail ? "    " : "│   "), false);
-        });
+        children.forEach(child -> print(child ,prefix + (isTail ? "    " : "│         "), false));
     }
     
 }
