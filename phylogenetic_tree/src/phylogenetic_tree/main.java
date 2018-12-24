@@ -17,11 +17,15 @@ public class main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final TreeParser treeParser = new TreeParser();
     private static final List<TreeNode> treeList = new ArrayList<>();
+    private static boolean exit = false;
 
     public static void main(String[] args) {
         String fileName = "file.txt";
         readFile(fileName);
-        showMenu();
+        while (!exit) {
+            showMenu();
+        }
+        closeProgram();
     }
 
     private static void readFile(String fileName) {
@@ -30,7 +34,7 @@ public class main {
             BufferedReader br = new BufferedReader(new FileReader(file));
             List<String> list = treeParser.parseFile(br);
             System.out.println(String.format("Found %d tree(s) in file", list.size()));
-            for (int i = 1; i < list.size(); i++) {
+            for (int i = 1; i <= list.size(); i++) {
                 System.out.println(String.format("%d. %s", i, list.get(i - 1)));
                 treeList.add(treeParser.readNewickFormat(list.get(i - 1)));
             }
@@ -41,29 +45,20 @@ public class main {
     }
 
     private static void showMenu() {
-        clearConsole();
         System.out.println("1. Show graph of selected tree");
+        System.out.println("9. Exit program");
         int menuIndex = selectItemFromMenu();
         switch (menuIndex) {
             case 1:
                 TreeGraph.showTreeGraph(treeList);
                 break;
+            case 9:
+                exit = true;
+                break;
             default:
                 System.out.println("Menu doesn't have such number !");
         }
 
-    }
-
-    public static void clearConsole() {
-        try {
-            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-        } catch (IOException ioEx) {
-            System.out.println("IOException while clearing console");
-            ioEx.printStackTrace();
-        } catch (InterruptedException intrEx) {
-            System.out.println("InterruptedException while clearing console");
-            intrEx.printStackTrace();
-        }
     }
 
     public static int selectItemFromMenu() {
@@ -78,6 +73,10 @@ public class main {
             }
             return menuIndex;
         }
+    }
+
+    private static void closeProgram() {
+        scanner.close();
     }
 
 }
