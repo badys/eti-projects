@@ -8,13 +8,17 @@ log = logging.getLogger("beelogger")
 
 class Hive:
 
-    LARVA_PERIOD = 3
-    BIGGER_LARVA_PERIOD = 3
+    EMBRIO_PERIOD = 3
+    LARVA_PERIOD = 6
+    BIGGER_LARVA_PERIOD = 12
     YOUNG_BEE_PERIOD = 10
     ADULT_BEE_PERIOD = 10
     SCOUT_BEE_PERIOD = 15
 
-    def __init__(self, max_days):
+
+
+    def __init__(self, max_days, initial_values):
+        self.initial_values = initial_values
         self.y = [0] * max_days
         self.y1 = [0] * max_days
         self.y2 = [0] * max_days
@@ -67,8 +71,8 @@ class Hive:
         self.u12d = [0] * max_days
         self.u11_2 = [0] * max_days
         self.x16 = [0] * max_days
-        # self.x14 = [0] * max_days
-        # self.x13 = [0] * max_days
+        self.sy = [0] * max_days
+        self.su = [0] * max_days
         # self.x14 = [0] * max_days
         # self.x13 = [0] * max_days
         # self.x14 = [0] * max_days
@@ -76,48 +80,42 @@ class Hive:
     def updatePopulation(self, day):
         assert isinstance(day, int) 
 
+        if day == 0:
+            # starting conditions
+            self.dy[day] = self.initial_values[0]
+            self.dy1[day] = self.initial_values[1]
+            self.dy2[day] = self.initial_values[2]
+            self.dy3[day] = self.initial_values[4] + self.initial_values[5] + self.initial_values[6]
+            self.dy4[day] = self.initial_values[4]
+            self.dy5[day] = self.initial_values[5]
+            self.dy6[day] = self.initial_values[6]
+        else:
+            self.dy1[day] = self.dy[day-self.EMBRIO_PERIOD]
+            self.dy2[day] = self.dy1[day-self.LARVA_PERIOD]
+            self.dy3[day] = self.dy2[day-self.BIGGER_LARVA_PERIOD]
+            self.dy4[day] = self.dy3[day]
+            self.dy5[day] = self.dy4[day-self.YOUNG_BEE_PERIOD]
+            self.dy6[day] = self.dy5[day-self.ADULT_BEE_PERIOD]
 
-
-        if (day - 3 >= 0): self.dy1[day] = self.dy[day-3]
-        if (day - 6 >= 0): self.dy2[day] = self.dy[day-6]
-        #if (day - 12 >= 0): self.dy3[day] = self.dy[day-12]
-
-        if (day - 12 >= 0): self.dy4[day] = self.dy[day-12]
-        if (day - 22 >= 0): self.dy5[day] = self.dy[day-22]
-        if (day - 32 >= 0): self.dy6[day] = self.dy[day-32]
-
-        # TODO: make a bit more readable
+        log.debug("growth: dy=%d, dy1=%d, dy2=%d, dy3=%d, dy4=%d, dy5=%d, dy6=%d" % (self.dy[day], self.dy1[day], self.dy2[day], self.dy3[day], self.dy4[day], self.dy5[day], self.dy6[day]))
+        
         self.y[day]  = sum(self.dy[max(day-2, 0):day+1])
         self.y1[day] = sum(self.dy1[max(day-5, 0):day+1])
         self.y2[day] = sum(self.dy2[max(day-11, 0):day+1])
-
         self.y4[day] = sum(self.dy4[max(day-9, 0):day+1])
         self.y5[day] = sum(self.dy5[max(day-9, 0):day+1])
         self.y6V[day] = int(sum(self.dy6[max(day-14, 0):day+1]) * 0.2)
         self.y6Q[day] = sum(self.dy6[max(day-14, 0):day+1]) - self.y6V[day]
-        
-
         self.y3[day] = self.y4[day] + self.y5[day] + self.y6Q[day] + self.y6V[day]
+
+        #log.debug("y = sum({})".format(self.dy[max(day-2, 0):day+1]))
+        #log.debug("y1 = sum({})".format(self.dy1[max(day-5, 0):day+1]))
+        #log.debug("y2 = sum({})".format(self.dy2[max(day-11, 0):day+1]))
+        #log.debug("y3 = sum({})".format(self.dy3[max(day-34, 0):day+1]))
+        #log.debug("y4 = sum({})".format(self.dy4[max(day-9, 0):day+1]))
+        #log.debug("y5 = sum({})".format(self.dy5[max(day-9, 0):day+1]))
+        #log.debug("y6 = sum({})".format(self.dy6[max(day-14, 0):day+1]))
         
-        print("y ", self.y[day])
-        print("y1 ", self.y1[day])
-        print("y2 ", self.y2[day])
-        print("y3 ", self.y3[day])
-        print("y4 ", self.y4[day])
-        print("y5 ", self.y5[day])
-        print("y6q ", self.y6Q[day])
-        print("y6v ", self.y6V[day])
-
-
         # make sure bee count across fractions is correct
-        assert self.y3[day] == (self.y4[day] + self.y5[day] + self.y6Q[day] + self.y6V[day])
-        
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-        # self.y[day] = sum(self.dy[max(day-2, 0):day+1])
-
+        assert self.y3[day] == (self.y4[day] + self.y5[day] + self.y6Q[day] + self.y6V[day]), "%d != %d + %d + %d + %d" % (self.y3[day], self.y4[day], self.y5[day], self.y6Q[day], self.y6V[day])
+       
