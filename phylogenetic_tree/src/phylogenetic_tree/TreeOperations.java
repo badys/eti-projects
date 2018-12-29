@@ -69,15 +69,58 @@ public class TreeOperations {
             if (union.isEmpty() || left.isEmpty()) {
                 continue;
             }
+            Collections.sort(union);
+            Collections.sort(left);
             
-            divisions.add(new Division(left.toArray(new String[left.size()]),
-                    union.toArray(new String[union.size()])));
+            boolean isDuplicate = false;
+            for (Division d : divisions) {
+                if ((Arrays.equals(left.toArray(new String[left.size()]), d.A) &&
+                        Arrays.equals(union.toArray(new String[left.size()]), d.B)) ||
+                        (Arrays.equals(left.toArray(new String[left.size()]), d.B) &&
+                        Arrays.equals(union.toArray(new String[left.size()]), d.A))) {
+                    //System.err.println("found duplicate");
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            
+            if (!isDuplicate) {
+                divisions.add(new Division(left.toArray(new String[left.size()]),
+                        union.toArray(new String[union.size()])));
+            }
             
             //System.out.println("<node " + tn.getName() + "> " +left + " : " + union);
         }
         
         
         return divisions;
+    }
+    
+    public static List<Division> divideTreeNontrivially(TreeNode root) {
+        
+        List<Division> trivial = divideTreeTrivially(root);
+        List<Division> nontrivial = new ArrayList<Division>();
+        for(Division d : trivial) {
+            if (d.A.length > 1 && d.B.length > 1)
+                nontrivial.add(d);
+        }
+        return nontrivial;
+    }
+    
+    public static void showNontrivialDivisionsForTree(TreeNode root) {
+        List<Division> divisions = divideTreeNontrivially(root);
+        int i = 1;
+        for(Division d : divisions) {
+            System.out.println(i++ + ") " + Arrays.asList(d.A) + " : " + Arrays.asList(d.B));
+        }
+    }
+    
+    public static void showTrivialDivisionsForTree(TreeNode root) {
+        List<Division> divisions = divideTreeTrivially(root);
+        int i = 1;
+        for(Division d : divisions) {
+            System.out.println(i++ + ") " + Arrays.asList(d.A) + " : " + Arrays.asList(d.B));
+        }
     }
     
     private static List<String> getLeavesNames(TreeNode[] nodesSerial) {
