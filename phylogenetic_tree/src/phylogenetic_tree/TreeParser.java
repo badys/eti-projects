@@ -90,16 +90,18 @@ public class TreeParser {
 
     public static TreeNode[] convertTreeNodesToArray(TreeNode root) {
         List<TreeNode> retList = new ArrayList<>();
-        expandTree(root.getChildren(), retList);
+        List<TreeNode> children = root.getChildren();
+        retList.add(root);
+        expandTree(children, retList);
         return retList.toArray(new TreeNode[retList.size()]);
     }
 
     private static void expandTree(List<TreeNode> children, List<TreeNode> retList) {
         if (children != null) {
             children.stream().forEach(child -> {
-                if (!"".equals(child.getName())) {
+//                if (!"".equals(child.getName())) {
                     retList.add(child);
-                }
+//                }
                 expandTree(child.getChildren(), retList);
             });
         }

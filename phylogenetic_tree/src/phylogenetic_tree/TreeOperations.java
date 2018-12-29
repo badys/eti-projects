@@ -30,30 +30,72 @@ public class TreeOperations {
         // assert leaves are the same
         assert(Arrays.equals(listA.toArray(), listB.toArray()));
         
+        List<Rozbicie> divisionsA = divideTreeTrivially(A);
+        //System.out.println("***");
+        List<Rozbicie> divisionsB = divideTreeTrivially(B);
         
-        
+        dist = divisionsA.size() + divisionsB.size();
+        for(Rozbicie divA : divisionsA) {
+            for(Rozbicie divB : divisionsB) {
+                dist = Rozbicie.equals(divA, divB) ? dist - 2 : dist;
+            }
+        }
+        System.out.println("topological distance = " + dist);
         return dist;
+    }
+    
+    public static List<Rozbicie> divideTreeTrivially(TreeNode root) {
+        
+        List<Rozbicie> divisions = new ArrayList<Rozbicie>();
+        
+        TreeNode[] nodesArray = TreeParser.convertTreeNodesToArray(root);
+        List<String> nodesList = getLeavesNames(nodesArray);
+        for(TreeNode tn : nodesArray) {
+            List<String> left = getLeavesNames(TreeParser.convertTreeNodesToArray(tn));
+            List<String> right = nodesList;
+            
+            List<String> union = new ArrayList<String>(left);
+            union.addAll(right);
+            List<String> intersection = new ArrayList<String>(left);
+            intersection.retainAll(right);
+            union.removeAll(intersection);
+            
+            if (union.isEmpty() || left.isEmpty()) {
+                continue;
+            }
+            
+            divisions.add(new Rozbicie(left.toArray(new String[left.size()]),
+                    union.toArray(new String[union.size()])));
+            
+            //System.out.println("<node " + tn.getName() + "> " +left + " : " + union);
+        }
+        
+        
+        return divisions;
     }
     
     private static List<String> getLeavesNames(TreeNode[] nodesSerial) {
         List<String> names = new ArrayList<String>();
         Arrays.asList(nodesSerial).stream().forEach(n -> {
-            names.add(n.getName());
+            if (!n.getName().equals(""))
+                names.add(n.getName());
         });
         return names;
     }
     
     // TODO: proper english term ???
-    public class Rozbicie {
+    public static class Rozbicie {
         public final String[] A, B;
         
         public Rozbicie(String[] A, String[] B) {
             this.A = A;
             this.B = B;
+            Arrays.sort(this.A);
+            Arrays.sort(this.B);
         }
         
-        public boolean equals(Rozbicie other) {
-            return Arrays.equals(A, other.A) && Arrays.equals(B, other.B);
+        public static boolean equals(Rozbicie first, Rozbicie second) {
+            return Arrays.equals(first.A, second.A) && Arrays.equals(first.B, second.B);
         }
         
     }

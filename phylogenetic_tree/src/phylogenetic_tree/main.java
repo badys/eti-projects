@@ -45,7 +45,8 @@ public class main {
     }
 
     private static void showMenu() {
-        System.out.println("1. Show graph of selected tree");
+        System.out.println("\n1. Show graph of selected tree");
+        System.out.println("2. Calculate topological distance between two trees");
         System.out.println("9. Exit program");
         int menuIndex = selectItemFromMenu();
         switch (menuIndex) {
@@ -53,7 +54,14 @@ public class main {
                 TreeGraph.showTreeGraph(treeList);
                 break;
             case 2:
-                TreeOperations.calculateTopologicalDistance(treeList.get(0), treeList.get(1));
+                int first, second;
+                System.out.println("Select first item:");
+                first = selectItemFromMenu()-1;
+                System.out.println("Select second item:");
+                second = selectItemFromMenu()-1;
+                TreeOperations.calculateTopologicalDistance(treeList.get(first), treeList.get(second));
+                break;
+            case 9:
                 exit = true;
                 break;
             default:
