@@ -78,9 +78,9 @@ public class TreeOperations {
             boolean isDuplicate = false;
             for (Division d : divisions) {
                 if ((Arrays.equals(left.toArray(new String[left.size()]), d.A) &&
-                        Arrays.equals(union.toArray(new String[left.size()]), d.B)) ||
+                        Arrays.equals(union.toArray(new String[union.size()]), d.B)) ||
                         (Arrays.equals(left.toArray(new String[left.size()]), d.B) &&
-                        Arrays.equals(union.toArray(new String[left.size()]), d.A))) {
+                        Arrays.equals(union.toArray(new String[union.size()]), d.A))) {
                     //System.err.println("found duplicate");
                     isDuplicate = true;
                     break;
@@ -122,6 +122,13 @@ public class TreeOperations {
         List<Division> divisions = divideTreeTrivially(root);
         int i = 1;
         for(Division d : divisions) {
+            System.out.println(i++ + ") " + Arrays.asList(d.A) + " : " + Arrays.asList(d.B));
+        }
+    }
+    
+    public static void showDivisions(List<Division> divs) {
+        int i = 1;
+        for(Division d : divs) {
             System.out.println(i++ + ") " + Arrays.asList(d.A) + " : " + Arrays.asList(d.B));
         }
     }
