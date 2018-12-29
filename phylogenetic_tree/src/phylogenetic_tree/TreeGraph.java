@@ -8,6 +8,11 @@ import java.util.List;
  * @author badys
  */
 public class TreeGraph {
+    
+    public static final String TAIL = "\u2514";
+    public static final String HORIZONTAL = "\u2500\u2500";
+    public static final String VERTICALWITHLINE = "\u251C";
+    public static final String VERTICAL = "\u2502";
 
     public static void showTreeGraph(List<TreeNode> treeList) {
         System.out.println("Select tree to show a graph of");
@@ -29,14 +34,10 @@ public class TreeGraph {
     }
 
     private static void print(TreeNode root, String prefix, boolean isTail) {
-        String tail = "└── ";
+        String tail = TAIL + HORIZONTAL + " ";
         String spaces = "      ";
         if (!isTail) {
-            String weight = String.valueOf(root.getWeight());
-            tail = "├──" + weight + "── ";
-            for (int i = 0; i < weight.length(); i++) {
-                spaces += " ";
-            }
+            tail = VERTICALWITHLINE + HORIZONTAL + HORIZONTAL + " ";
         }
         System.out.println(prefix + tail + root.getName());
         List<TreeNode> children = root.getChildren();
@@ -44,7 +45,7 @@ public class TreeGraph {
             return;
         }
         String whitespaces = spaces;
-        children.forEach(child -> print(child, prefix + (isTail ? "    " : "│" + whitespaces), false));
+        children.forEach(child -> print(child, prefix + (isTail ? "    " : VERTICAL + whitespaces), false));
     }
 
 }
