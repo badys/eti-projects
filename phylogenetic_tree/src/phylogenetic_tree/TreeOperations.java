@@ -28,7 +28,10 @@ public class TreeOperations {
         Collections.sort(listB);
         
         // assert leaves are the same
-        assert(Arrays.equals(listA.toArray(), listB.toArray()));
+        if (!Arrays.equals(listA.toArray(), listB.toArray())) {
+            System.err.println("Error: Leaves for both trees differ!");
+            return -1;
+        }
         
         List<Division> divisionsA = divideTreeTrivially(A);
         //System.out.println("***");
