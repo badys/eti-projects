@@ -47,7 +47,7 @@ public class TreeParser {
         }
     }
 
-    private static String[] split(String s) {
+    private String[] split(String s) {
 
         ArrayList<Integer> splitIndices = new ArrayList<>();
 
@@ -86,6 +86,24 @@ public class TreeParser {
         }
 
         return splits;
+    }
+    
+    public TreeNode[] convertTreeNodesToArray(TreeNode root) {
+        List<TreeNode> retList = new ArrayList<>();
+        retList.add(root);
+        
+        expandTree(root.getChildren(), retList);
+        
+        return retList.toArray(new TreeNode[retList.size()]);
+    }
+
+    private void expandTree(List<TreeNode> children, List<TreeNode> retList) {
+        if (children != null) {
+            children.forEach(child -> {
+                retList.add(child);
+                expandTree(child.getChildren(), retList);
+            });
+        }
     }
 
 }
