@@ -88,13 +88,13 @@ public class TreeParser {
         return splits;
     }
 
-    public TreeNode[] convertTreeNodesToArray(TreeNode root) {
+    public static TreeNode[] convertTreeNodesToArray(TreeNode root) {
         List<TreeNode> retList = new ArrayList<>();
         expandTree(root.getChildren(), retList);
         return retList.toArray(new TreeNode[retList.size()]);
     }
 
-    private void expandTree(List<TreeNode> children, List<TreeNode> retList) {
+    private static void expandTree(List<TreeNode> children, List<TreeNode> retList) {
         if (children != null) {
             children.stream().forEach(child -> {
                 if (!"".equals(child.getName())) {

@@ -52,7 +52,8 @@ public class main {
             case 1:
                 TreeGraph.showTreeGraph(treeList);
                 break;
-            case 9:
+            case 2:
+                TreeOperations.calculateTopologicalDistance(treeList.get(0), treeList.get(1));
                 exit = true;
                 break;
             default:
