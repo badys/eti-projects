@@ -30,23 +30,29 @@ public class TreeOperations {
         // assert leaves are the same
         assert(Arrays.equals(listA.toArray(), listB.toArray()));
         
-        List<Rozbicie> divisionsA = divideTreeTrivially(A);
+        List<Division> divisionsA = divideTreeTrivially(A);
         //System.out.println("***");
-        List<Rozbicie> divisionsB = divideTreeTrivially(B);
+        List<Division> divisionsB = divideTreeTrivially(B);
+        
+        if (!Division.validateDivisionSet(divisionsA))
+            System.err.println("divA invalid");
+        
+        if (!Division.validateDivisionSet(divisionsB))
+            System.err.println("divB invalid");
         
         dist = divisionsA.size() + divisionsB.size();
-        for(Rozbicie divA : divisionsA) {
-            for(Rozbicie divB : divisionsB) {
-                dist = Rozbicie.equals(divA, divB) ? dist - 2 : dist;
+        for(Division divA : divisionsA) {
+            for(Division divB : divisionsB) {
+                dist = Division.equals(divA, divB) ? dist - 2 : dist;
             }
         }
         System.out.println("topological distance = " + dist);
         return dist;
     }
     
-    public static List<Rozbicie> divideTreeTrivially(TreeNode root) {
+    public static List<Division> divideTreeTrivially(TreeNode root) {
         
-        List<Rozbicie> divisions = new ArrayList<Rozbicie>();
+        List<Division> divisions = new ArrayList<Division>();
         
         TreeNode[] nodesArray = TreeParser.convertTreeNodesToArray(root);
         List<String> nodesList = getLeavesNames(nodesArray);
@@ -64,7 +70,7 @@ public class TreeOperations {
                 continue;
             }
             
-            divisions.add(new Rozbicie(left.toArray(new String[left.size()]),
+            divisions.add(new Division(left.toArray(new String[left.size()]),
                     union.toArray(new String[union.size()])));
             
             //System.out.println("<node " + tn.getName() + "> " +left + " : " + union);
@@ -82,24 +88,5 @@ public class TreeOperations {
         });
         return names;
     }
-    
-    // TODO: proper english term ???
-    public static class Rozbicie {
-        public final String[] A, B;
-        
-        public Rozbicie(String[] A, String[] B) {
-            this.A = A;
-            this.B = B;
-            Arrays.sort(this.A);
-            Arrays.sort(this.B);
-        }
-        
-        public static boolean equals(Rozbicie first, Rozbicie second) {
-            return Arrays.equals(first.A, second.A) && Arrays.equals(first.B, second.B);
-        }
-        
-    }
-    
-    
     
 }
