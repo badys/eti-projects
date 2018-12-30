@@ -8,19 +8,14 @@ import java.util.List;
  * @author badys
  */
 public class TreeGraph {
-    
+
     public static final String TAIL = "\u2514";
     public static final String HORIZONTAL = "\u2500\u2500";
     public static final String VERTICALWITHLINE = "\u251C";
     public static final String VERTICAL = "\u2502";
 
-    public static void showTreeGraph(List<TreeNode> treeList) {
-        System.out.println("Select tree to show a graph of");
-        for (int i = 1; i <= treeList.size(); i++) {
-            System.out.println(String.format("%d. %s", i, treeList.get(i - 1).getRawFormat()));
-        }
-        int menuIndex = main.selectItemFromMenu();
-        print(treeList.get(menuIndex - 1));
+    public static void showTreeGraph(TreeNode tree) {
+        print(tree);
         try {
             System.out.print("Press enter key to leave preview.");
             System.in.read();
@@ -46,6 +41,12 @@ public class TreeGraph {
         }
         String whitespaces = spaces;
         children.forEach(child -> print(child, prefix + (isTail ? "    " : VERTICAL + whitespaces), false));
+    }
+
+    public static void printTreeListInRawFormat(List<TreeNode> treeList) {
+        for (int i = 1; i <= treeList.size(); i++) {
+            System.out.println(String.format("%d. %s", i, treeList.get(i - 1).getRawFormat()));
+        }
     }
 
 }

@@ -3,7 +3,6 @@ package phylogenetic_tree;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,13 +13,14 @@ import java.util.Scanner;
  */
 public class main {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    public static final Scanner scanner = new Scanner(System.in);
     private static final TreeParser treeParser = new TreeParser();
     private static final List<TreeNode> treeList = new ArrayList<>();
     private static boolean exit = false;
+    private static String fileName = "";
 
     public static void main(String[] args) {
-        String fileName = "file.txt";
+        fileName = "file.txt";
         readFile(fileName);
         while (!exit) {
             showMenu();
@@ -49,36 +49,47 @@ public class main {
         System.out.println("2. Show nontrivial divisions of selected tree");
         System.out.println("3. Show trivial divisions of selected tree");
         System.out.println("4. Calculate topological distance between two trees");
+        System.out.println("5. Reconstruct tree from divisions");
+        System.out.println("6. Cut tree");
         System.out.println("9. Exit program");
         int menuIndex = selectItemFromMenu();
         switch (menuIndex) {
             case 1:
-                TreeGraph.showTreeGraph(treeList);
+                System.out.println("Select tree to show a graph of");
+                TreeGraph.printTreeListInRawFormat(treeList);
+                menuIndex = selectItemFromMenu() - 1;
+                TreeGraph.showTreeGraph(treeList.get(menuIndex));
                 break;
             case 2:
                 System.out.print("Select tree: ");
-                menuIndex = selectItemFromMenu()-1;
+                menuIndex = selectItemFromMenu() - 1;
                 TreeOperations.showNontrivialDivisionsForTree(treeList.get(menuIndex));
                 break;
             case 3:
                 System.out.print("Select tree: ");
-                menuIndex = selectItemFromMenu()-1;
+                menuIndex = selectItemFromMenu() - 1;
                 TreeOperations.showTrivialDivisionsForTree(treeList.get(menuIndex));
                 break;
             case 4:
-                int first, second;
+                int first,second;
                 System.out.println("Select first item:");
-                first = selectItemFromMenu()-1;
+                first = selectItemFromMenu() - 1;
                 System.out.println("Select second item:");
-                second = selectItemFromMenu()-1;
+                second = selectItemFromMenu() - 1;
                 TreeOperations.calculateTopologicalDistance(treeList.get(first), treeList.get(second));
                 break;
             case 5:
                 System.out.print("Select tree: ");
-                menuIndex = selectItemFromMenu()-1;
+                menuIndex = selectItemFromMenu() - 1;
                 TreeNode reconstructedTree = new TreeNode();
-                List<String> temp = TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), reconstructedTree);
+                TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), reconstructedTree);
                 TreeGraph.print(reconstructedTree);
+                break;
+            case 6:
+                System.out.print("Select tree: ");
+                menuIndex = selectItemFromMenu() - 1;
+                TreeNode newNode = TreeOperations.cutTreeToSubTree(treeList.get(menuIndex));
+                if (newNode != null) TreeGraph.print(newNode);
                 break;
             case 9:
                 exit = true;

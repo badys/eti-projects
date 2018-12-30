@@ -14,7 +14,9 @@ public class TreeParser {
     private TreeNode root;
 
     List<String> parseFile(BufferedReader br) {
-        return br.lines().collect(Collectors.toList());
+        return br.lines()
+                .filter(line -> !line.startsWith("#"))
+                .collect(Collectors.toList());
     }
 
     TreeNode readNewickFormat(String newick) {
@@ -23,66 +25,67 @@ public class TreeParser {
         return root;
     }
 
-    private TreeNode readSubtree(String mainString) {
+    private TreeNode readSubtree(String main) {
 
-        int leftParen = mainString.indexOf('(');
-        int rightParen = mainString.lastIndexOf(')');
+        int leftParen = main.indexOf('(');
+        int rightParen = main.lastIndexOf(')');
 
         if (leftParen != -1 && rightParen != -1) {
 
-            String name = mainString.substring(rightParen + 1);
-            String[] childrenString = split(mainString.substring(leftParen + 1, rightParen));
+            String name = main.substring(rightParen + 1);
+            String[] childrenString = split(main.substring(leftParen + 1, rightParen));
 
             TreeNode node = new TreeNode(name);
-            for (String sub : childrenString) {
-                TreeNode child = readSubtree(sub);
+            for (String subString : childrenString) {
+                TreeNode child = readSubtree(subString);
                 node.addChild(child);
             }
             return node;
         } else if (leftParen == rightParen) {
-            TreeNode node = new TreeNode(mainString);
+            TreeNode node = new TreeNode(main);
             return node;
         } else {
-            throw new RuntimeException();
+            System.out.println("Error while parsing tree");
+            return null;
         }
     }
 
     private String[] split(String s) {
 
-        ArrayList<Integer> splitIndices = new ArrayList<>();
+        List<Integer> splitIdx = new ArrayList<>();
 
-        int rightParenCount = 0;
-        int leftParenCount = 0;
-        for (int i = 0; i < s.length(); i++) {
-            switch (s.charAt(i)) {
+        int rightCount = 0;
+        int leftCount = 0;
+        char[] charArray = s.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            switch(charArray[i]) {
                 case '(':
-                    leftParenCount++;
+                    leftCount++;
                     break;
                 case ')':
-                    rightParenCount++;
+                    rightCount++;
                     break;
                 case ',':
-                    if (leftParenCount == rightParenCount) {
-                        splitIndices.add(i);
+                    if (leftCount == rightCount) {
+                        splitIdx.add(i);
                     }
+                    break;
+                default:
                     break;
             }
         }
 
-        int numSplits = splitIndices.size() + 1;
-        String[] splits = new String[numSplits];
+        int splitsSize = splitIdx.size() + 1;
+        String[] splits = new String[splitsSize];
 
-        if (numSplits == 1) {
+        if (splitsSize == 1) {
             splits[0] = s;
         } else {
-
-            splits[0] = s.substring(0, splitIndices.get(0));
-
-            for (int i = 1; i < splitIndices.size(); i++) {
-                splits[i] = s.substring(splitIndices.get(i - 1) + 1, splitIndices.get(i));
+            splits[0] = s.substring(0, splitIdx.get(0));
+            for (int i = 1; i < splitIdx.size(); i++) {
+                splits[i] = s.substring(splitIdx.get(i - 1) + 1, splitIdx.get(i));
             }
-
-            splits[numSplits - 1] = s.substring(splitIndices.get(splitIndices.size() - 1) + 1);
+            splits[splitsSize - 1] = s.substring(splitIdx.get(splitIdx.size() - 1) + 1);
         }
 
         return splits;
@@ -99,12 +102,14 @@ public class TreeParser {
     private static void expandTree(List<TreeNode> children, List<TreeNode> retList) {
         if (children != null) {
             children.stream().forEach(child -> {
-//                if (!"".equals(child.getName())) {
-                    retList.add(child);
-//                }
+                retList.add(child);
                 expandTree(child.getChildren(), retList);
             });
         }
+    }
+    
+    public static void saveNewTreeToFile(String fileName, TreeNode newNode) {
+        
     }
 
 }

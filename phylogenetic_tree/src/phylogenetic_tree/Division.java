@@ -66,7 +66,7 @@ public class Division {
     public static boolean validateDivisionSet(List<Division> list) {
         for(int i = 0; i < list.size(); i++) {
             for(int j = i+1; j < list.size(); j++) {
-                if (!Division.validate(list.get(i), list.get(j)))
+                if (!validate(list.get(i), list.get(j)))
                     return false;
             }
         }
@@ -87,5 +87,19 @@ public class Division {
     public void show() {
         System.out.println(Arrays.asList(A) + " : " + Arrays.asList(B));
     }
+    
+    /*
+     * getters
+     */
+
+    public String[] getA() {
+        return A;
+    }
+
+    public String[] getB() {
+        return B;
+    }
+    
+    
 }
     

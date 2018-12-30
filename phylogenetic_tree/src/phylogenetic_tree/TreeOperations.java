@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -230,6 +232,58 @@ public class TreeOperations {
                 names.add(n.getName());
         });
         return names;
+    }
+    
+    private static List<String> getChildNames(TreeNode node) {
+        List<String> retList = new ArrayList();
+        if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+            node.getChildren().stream().forEach(child -> {
+                //retList.add(!"".equals(child.getName()) ? child.getName() : " ");
+                if(!"".equals(child.getName())) {
+                    retList.add(child.getName());
+                }
+                retList.addAll(getChildNames(child));
+            });
+        }
+        if (!"".equals(node.getName())) {
+            retList.add(node.getName());
+        }
+        retList.sort(Comparator.naturalOrder());
+        return retList.stream().distinct().collect(Collectors.toList());
+    }
+
+    public static TreeNode cutTreeToSubTree(TreeNode root) {
+        main.scanner.nextLine(); //reset scanner
+        TreeGraph.print(root);
+        TreeNode[] nodeArray = TreeParser.convertTreeNodesToArray(root);
+        List<String> leavesArray = getLeavesNames(nodeArray);
+        //Collecting characters only matching leaves names
+        List<String> distinctList = new ArrayList();
+        while (distinctList.isEmpty()) {
+            System.out.println("Pick leaves to create subtree");
+            String selectedLeaves = main.scanner.nextLine().replaceAll(" ", "");
+            distinctList = Arrays.stream(selectedLeaves.split(""))
+                    .filter(single_char -> leavesArray.stream().anyMatch(leaf -> leaf.equalsIgnoreCase(single_char)))
+                    .distinct()
+                    .map(String::toUpperCase) // uppercasing for easier sort
+                    .collect(Collectors.toList());
+
+            if (distinctList.isEmpty()) {
+                System.out.println("Input doesn't match any of the leaves !");
+            }
+        }
+        distinctList.sort(Comparator.naturalOrder()); //sorting
+        List<String> selectedLeaves = distinctList; // making variable effectively final
+        TreeNode leftNode = Arrays.stream(nodeArray)
+                .filter(node -> Arrays.equals(getChildNames(node).toArray(), selectedLeaves.toArray()))
+                .findFirst()
+                .orElse(null);
+        
+        if (leftNode == null) {
+            System.out.println("Selected tree was not possible to cut");
+        }
+
+        return leftNode;
     }
     
 }

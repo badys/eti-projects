@@ -19,13 +19,13 @@ public class TreeNode {
     }
 
     public TreeNode(String name) {
-        int colonIndex = name.indexOf(':');
-        if (colonIndex == -1) {
+        int idx = name.indexOf(':');
+        if (idx == -1) {
             this.name = name;
             weight = 0;
         } else {
-            this.name = name.substring(0, colonIndex);
-            weight = Float.parseFloat(name.substring(colonIndex + 1, name.length()));
+            this.name = name.substring(0, idx);
+            weight = Float.parseFloat(name.substring(idx + 1, name.length()));
         }
     }
 
