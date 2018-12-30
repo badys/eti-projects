@@ -73,6 +73,11 @@ public class main {
                 second = selectItemFromMenu()-1;
                 TreeOperations.calculateTopologicalDistance(treeList.get(first), treeList.get(second));
                 break;
+            case 5:
+                System.out.print("Select tree: ");
+                menuIndex = selectItemFromMenu()-1;
+                TreeGraph.print(TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), new TreeNode()));
+                break;
             case 9:
                 exit = true;
                 break;

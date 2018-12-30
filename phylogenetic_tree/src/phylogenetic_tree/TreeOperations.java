@@ -99,6 +99,60 @@ public class TreeOperations {
         return divisions;
     }
     
+    
+    public static TreeNode reconstrucTreeFromDivisionSet(List<Division> divs, List<String> danglingLeaves, TreeNode parent) {
+        
+        if (danglingLeaves.isEmpty()) {
+            // zero iteration
+            danglingLeaves = divs.get(0).getAllLeaves();
+            System.out.println("** first iter: leaves = " + danglingLeaves);
+        }
+        
+        //dbg
+        //System.out.println(" ************* divs:\n");
+        //TreeOperations.showDivisions(divs);
+        
+        int maxVal = 0;
+        Division pick = new Division();
+        // find biggest division
+        for(Division d : divs) {
+            
+            if (danglingLeaves.containsAll(Arrays.asList(d.A))) {
+                // division is further branching in same direction
+                // check if it is "the biggest"
+                if (d.A.length > maxVal) {
+                     maxVal = d.A.length;
+                     pick = d;
+                }
+            }
+        }
+        // picked right division to perform further branching
+        pick.show();
+        
+        if (pick.A.length == 1) {
+            // leaf node
+            TreeNode leaf = new TreeNode(pick.A[0]);
+            parent.addChild(leaf);
+            return parent; 
+        }
+        
+        // create childreen nodes
+        //FIXME: later?
+        TreeNode child = new TreeNode();
+        parent.addChild(child);
+        
+        // remove picked division from the set
+        List<Division> newDivs = divs;
+        if (!newDivs.remove(pick))
+            System.err.println("cannot remove picked div from list");
+        
+        reconstrucTreeFromDivisionSet(newDivs, Arrays.asList(newDivs.get(0).A), child);
+        
+        
+        return parent;
+    }
+    
+    
     public static List<Division> divideTreeNontrivially(TreeNode root) {
         
         List<Division> trivial = divideTreeTrivially(root);

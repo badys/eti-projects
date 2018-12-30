@@ -7,6 +7,7 @@ package phylogenetic_tree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,6 +17,11 @@ import java.util.List;
 public class Division {
     public final String[] A, B;
 
+    public Division() {
+        A = new String[0];
+        B = new String[0];
+    }
+    
     public Division(String[] A, String[] B) {
         this.A = A;
         this.B = B;
@@ -67,5 +73,19 @@ public class Division {
         return true;
     }
 
+    public int getLeavesNum() {
+        return A.length + B.length;
+    }
+    
+    public List<String> getAllLeaves() {
+        List<String> both = new ArrayList<String>(A.length + B.length);
+        Collections.addAll(both, A);
+        Collections.addAll(both, B);
+        return both;
+    }
+    
+    public void show() {
+        System.out.println(Arrays.asList(A) + " : " + Arrays.asList(B));
+    }
 }
     
