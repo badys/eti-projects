@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -100,56 +101,91 @@ public class TreeOperations {
     }
     
     
-    public static TreeNode reconstrucTreeFromDivisionSet(List<Division> divs, List<String> danglingLeaves, TreeNode parent) {
+    public static List<String> reconstrucTreeFromDivisionSet(List<Division> divs, List<String> danglingLeaves, TreeNode node) {
         
         if (danglingLeaves.isEmpty()) {
             // zero iteration
             danglingLeaves = divs.get(0).getAllLeaves();
-            System.out.println("** first iter: leaves = " + danglingLeaves);
+//            System.out.println("** first iter: leaves = " + danglingLeaves);
         }
+        
+//        List<String> newDanglingLeaves = Arrays.asList(pick.A).stream()
+//                .collect(Collectors.toList());
         
         //dbg
-        //System.out.println(" ************* divs:\n");
-        //TreeOperations.showDivisions(divs);
+//        System.out.println(" ************* divs:\n");
+//        TreeOperations.showDivisions(divs);
+
+        List<String> matchedLeaves = new ArrayList<String>();      
+        List<String> leavesToMatch = danglingLeaves.stream()
+                .filter(x -> !matchedLeaves.contains(x))
+                .collect(Collectors.toList());
+        //System.out.println("NODE's leaves: " + danglingLeaves);
+        //System.out.println("NODE's matches: " + matchedLeaves);
+        System.out.println("** to match in node ** " + leavesToMatch);
         
-        int maxVal = 0;
-        Division pick = new Division();
-        // find biggest division
-        for(Division d : divs) {
+        
+
+        
+        while(!leavesToMatch.isEmpty()) {
             
-            if (danglingLeaves.containsAll(Arrays.asList(d.A))) {
-                // division is further branching in same direction
-                // check if it is "the biggest"
-                if (d.A.length > maxVal) {
-                     maxVal = d.A.length;
-                     pick = d;
+            int maxVal = 0;
+            Division pick = new Division();
+            // find biggest division
+            for(Division d : divs) {     
+                if (danglingLeaves.containsAll(Arrays.asList(d.A))) {
+                    // division is further branching in same direction
+                    // check if it is "the biggest"
+                    if (d.A.length > maxVal) {
+                         maxVal = d.A.length;
+                         pick = d;
+                    }
                 }
             }
+            // picked right division to perform further branching
+            System.out.print("Pick >>> ");
+            pick.show();
+
+            divs.remove(pick);
+            //TreeOperations.showDivisions(divs);
+            //System.out.print(" <<< ****** >>> ");
+
+
+            if (maxVal == 1) {
+                // only leaves nodes to add
+                for(String s : leavesToMatch) {
+                    TreeNode leaf = new TreeNode(s);
+                    node.addChild(leaf);
+                    matchedLeaves.add(s);
+                    System.out.println("Matched leaf: " + s);
+                }
+
+                return matchedLeaves; 
+            }
+
+
+
+
+//            final Division pickFinal = pick;
+//            List<Division> newDivs = divs.stream()
+//                    .filter(x -> !x.equals(pickFinal))
+//                    .collect(Collectors.toList());
+
+            List<String> childsDanglingLeaves = Arrays.asList(pick.A).stream()
+                    .collect(Collectors.toList());
+            
+            TreeNode child = new TreeNode();
+            node.addChild(child);
+            List<String> matched = reconstrucTreeFromDivisionSet(divs, childsDanglingLeaves, child);
+            matchedLeaves.addAll(matched);
+            leavesToMatch = danglingLeaves.stream()
+                .filter(x -> !matchedLeaves.contains(x))
+                .collect(Collectors.toList());
+            System.out.println(matched + ", still to match: " + leavesToMatch);
+            
         }
-        // picked right division to perform further branching
-        pick.show();
-        
-        if (pick.A.length == 1) {
-            // leaf node
-            TreeNode leaf = new TreeNode(pick.A[0]);
-            parent.addChild(leaf);
-            return parent; 
-        }
-        
-        // create childreen nodes
-        //FIXME: later?
-        TreeNode child = new TreeNode();
-        parent.addChild(child);
-        
-        // remove picked division from the set
-        List<Division> newDivs = divs;
-        if (!newDivs.remove(pick))
-            System.err.println("cannot remove picked div from list");
-        
-        reconstrucTreeFromDivisionSet(newDivs, Arrays.asList(newDivs.get(0).A), child);
-        
-        
-        return parent;
+        System.out.println("returning " + matchedLeaves);
+        return matchedLeaves;
     }
     
     

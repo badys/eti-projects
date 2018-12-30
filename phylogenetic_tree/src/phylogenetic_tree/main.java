@@ -76,7 +76,9 @@ public class main {
             case 5:
                 System.out.print("Select tree: ");
                 menuIndex = selectItemFromMenu()-1;
-                TreeGraph.print(TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), new TreeNode()));
+                TreeNode reconstructedTree = new TreeNode();
+                List<String> temp = TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), reconstructedTree);
+                TreeGraph.print(reconstructedTree);
                 break;
             case 9:
                 exit = true;
