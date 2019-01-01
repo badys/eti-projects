@@ -166,7 +166,7 @@ public class TreeOperations {
         List<String> leavesToMatch = danglingLeaves.stream()
                 .filter(x -> !matchedLeaves.contains(x))
                 .collect(Collectors.toList());
-        System.out.println("** to match in node ** " + leavesToMatch);
+        //System.out.println("** to match in node ** " + leavesToMatch);
         
         
 
@@ -187,7 +187,7 @@ public class TreeOperations {
                 }
             }
             // picked right division to perform further branching
-            System.out.print("Pick >>> ");
+            //System.out.print("Pick >>> ");
             pick.show();
 
             divs.remove(pick);
@@ -199,7 +199,7 @@ public class TreeOperations {
                     TreeNode leaf = new TreeNode(s);
                     node.addChild(leaf);
                     matchedLeaves.add(s);
-                    System.out.println("Matched leaf: " + s);
+                    //System.out.println("Matched leaf: " + s);
                 }
 
                 return matchedLeaves; 
@@ -215,7 +215,7 @@ public class TreeOperations {
             leavesToMatch = danglingLeaves.stream()
                 .filter(x -> !matchedLeaves.contains(x))
                 .collect(Collectors.toList());
-            System.out.println(matched + ", still to match: " + leavesToMatch);
+            //System.out.println(matched + ", still to match: " + leavesToMatch);
             
         }
         return matchedLeaves;

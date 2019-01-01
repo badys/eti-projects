@@ -51,6 +51,7 @@ public class main {
         System.out.println("4. Calculate topological distance between two trees");
         System.out.println("5. Reconstruct tree from divisions");
         System.out.println("6. Cut tree");
+        System.out.println("7. Calculate consensus tree from treelist");
         System.out.println("9. Exit program");
         int menuIndex = selectItemFromMenu();
         switch (menuIndex) {
