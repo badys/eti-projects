@@ -107,9 +107,5 @@ public class TreeParser {
             });
         }
     }
-    
-    public static void saveNewTreeToFile(String fileName, TreeNode newNode) {
-        
-    }
 
 }

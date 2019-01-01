@@ -57,39 +57,39 @@ public class main {
         int menuIndex = selectItemFromMenu();
         switch (menuIndex) {
             case 1:
-                System.out.println("Select tree to show a graph of");
+                System.out.println("Select tree: ");
                 TreeGraph.printTreeListInRawFormat(treeList);
-                menuIndex = selectItemFromMenu() - 1;
-                TreeGraph.showTreeGraph(treeList.get(menuIndex));
+                menuIndex = selectTreeFromList();
+                TreeGraph.print(treeList.get(menuIndex));
                 break;
             case 2:
                 System.out.print("Select tree: ");
-                menuIndex = selectItemFromMenu() - 1;
+                menuIndex = selectTreeFromList();
                 TreeOperations.showNontrivialDivisionsForTree(treeList.get(menuIndex));
                 break;
             case 3:
                 System.out.print("Select tree: ");
-                menuIndex = selectItemFromMenu() - 1;
+                menuIndex = selectTreeFromList();
                 TreeOperations.showTrivialDivisionsForTree(treeList.get(menuIndex));
                 break;
             case 4:
                 int first,second;
                 System.out.println("Select first item:");
-                first = selectItemFromMenu() - 1;
+                first = selectTreeFromList();
                 System.out.println("Select second item:");
-                second = selectItemFromMenu() - 1;
+                second = selectTreeFromList();
                 TreeOperations.calculateTopologicalDistance(treeList.get(first), treeList.get(second));
                 break;
             case 5:
                 System.out.print("Select tree: ");
-                menuIndex = selectItemFromMenu() - 1;
+                menuIndex = selectTreeFromList();
                 TreeNode reconstructedTree = new TreeNode();
                 TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), reconstructedTree, 0);
                 TreeGraph.print(reconstructedTree);
                 break;
             case 6:
                 System.out.print("Select tree: ");
-                menuIndex = selectItemFromMenu() - 1;
+                menuIndex = selectTreeFromList();
                 TreeNode newNode = TreeOperations.cutTreeToSubTree(treeList.get(menuIndex));
                 if (newNode != null) TreeGraph.print(newNode);
                 break;
@@ -122,6 +122,24 @@ public class main {
                 continue;
             }
             return menuIndex;
+        }
+    }
+
+    public static int selectTreeFromList() {
+        while (true) {
+            String selection = scanner.next();
+            int menuIndex = -1;
+            try {
+                menuIndex = Integer.valueOf(selection);
+                if (menuIndex < 1 || menuIndex > treeList.size()) {
+                    System.out.println("Pick number from the list !");
+                    continue;
+                }
+            } catch (NumberFormatException nfe) {
+                System.out.println("Please input a number !");
+                continue;
+            }
+            return menuIndex - 1;
         }
     }
 

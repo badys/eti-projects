@@ -14,16 +14,6 @@ public class TreeGraph {
     public static final String VERTICALWITHLINE = "\u251C";
     public static final String VERTICAL = "\u2502";
 
-    public static void showTreeGraph(TreeNode tree) {
-        print(tree);
-        try {
-            System.out.print("Press enter key to leave preview.");
-            System.in.read();
-        } catch (IOException ex) {
-            System.out.println("IOException while reading input");
-        }
-    }
-
     public static void print(TreeNode root) {
         print(root, "", true);
     }
