@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -49,7 +50,7 @@ public class TreeOperations {
         dist = divisionsA.size() + divisionsB.size();
         for(Division divA : divisionsA) {
             for(Division divB : divisionsB) {
-                dist = Division.equals(divA, divB) ? dist - 2 : dist;
+                dist = divA.equals(divB) ? dist - 2 : dist;
             }
         }
         System.out.println("topological distance = " + dist);
@@ -102,28 +103,69 @@ public class TreeOperations {
         return divisions;
     }
     
+    public static TreeNode findConsensusTree(List<TreeNode> treeList, int ratio) {
+        
+        
+        List<List<Division>> fullSet = new ArrayList<List<Division>>();
+        List<Division> consensus = new ArrayList<Division>();
+        
+        List<String> listA = getLeavesNames(TreeParser.convertTreeNodesToArray(treeList.get(0)));
+        Collections.sort(listA);
+        
+        for(TreeNode node : treeList) {
+            List<String> listB = getLeavesNames(TreeParser.convertTreeNodesToArray(treeList.get(0)));
+            Collections.sort(listB);
+            if (!Arrays.equals(listA.toArray(), listB.toArray())) {
+                System.err.println("Error: Leaves for both trees differ!");
+                return new TreeNode();
+            }
+            fullSet.add(divideTreeTrivially(node));
+            
+        }
+        Map<Division, Integer> hm = new HashMap<Division, Integer>(); 
+  
+        for(List<Division> dl : fullSet) {
+            for (Division d : dl) {
+                if (hm.get(d) == null)
+                    hm.put(d, 1);
+                else
+                    hm.put(d, hm.get(d) + 1);
+                
+            }
+        }
+  
+        // displaying the occurrence of elements in the arraylist 
+        for (Map.Entry<Division, Integer> val : hm.entrySet()) { 
+            System.out.println("Division " + Arrays.asList(val.getKey().A) + ":"
+                    + Arrays.asList(val.getKey().B) + " occurs"
+                    + ": " + val.getValue() + " times"); 
+        } 
+        
+        System.out.println("consensus set: ");
+        for (Map.Entry<Division, Integer> val : hm.entrySet()) { 
+            if (((double)val.getValue() * 100.0) / (double)treeList.size() >= ratio) {
+                val.getKey().show();
+                consensus.add(val.getKey());
+            }
+        } 
+
+        TreeNode consensusTree = new TreeNode();
+        reconstrucTreeFromDivisionSet(consensus, new ArrayList<String>(), consensusTree);
+        return consensusTree;
+    }
     
     public static List<String> reconstrucTreeFromDivisionSet(List<Division> divs, List<String> danglingLeaves, TreeNode node) {
         
         if (danglingLeaves.isEmpty()) {
             // zero iteration
             danglingLeaves = divs.get(0).getAllLeaves();
-//            System.out.println("** first iter: leaves = " + danglingLeaves);
+            TreeOperations.showDivisions(divs);
         }
-        
-//        List<String> newDanglingLeaves = Arrays.asList(pick.A).stream()
-//                .collect(Collectors.toList());
-        
-        //dbg
-//        System.out.println(" ************* divs:\n");
-//        TreeOperations.showDivisions(divs);
 
         List<String> matchedLeaves = new ArrayList<String>();      
         List<String> leavesToMatch = danglingLeaves.stream()
                 .filter(x -> !matchedLeaves.contains(x))
                 .collect(Collectors.toList());
-        //System.out.println("NODE's leaves: " + danglingLeaves);
-        //System.out.println("NODE's matches: " + matchedLeaves);
         System.out.println("** to match in node ** " + leavesToMatch);
         
         
@@ -149,8 +191,6 @@ public class TreeOperations {
             pick.show();
 
             divs.remove(pick);
-            //TreeOperations.showDivisions(divs);
-            //System.out.print(" <<< ****** >>> ");
 
 
             if (maxVal == 1) {
@@ -165,14 +205,6 @@ public class TreeOperations {
                 return matchedLeaves; 
             }
 
-
-
-
-//            final Division pickFinal = pick;
-//            List<Division> newDivs = divs.stream()
-//                    .filter(x -> !x.equals(pickFinal))
-//                    .collect(Collectors.toList());
-
             List<String> childsDanglingLeaves = Arrays.asList(pick.A).stream()
                     .collect(Collectors.toList());
             
@@ -186,11 +218,9 @@ public class TreeOperations {
             System.out.println(matched + ", still to match: " + leavesToMatch);
             
         }
-        System.out.println("returning " + matchedLeaves);
         return matchedLeaves;
     }
-    
-    
+     
     public static List<Division> divideTreeNontrivially(TreeNode root) {
         
         List<Division> trivial = divideTreeTrivially(root);

@@ -91,6 +91,11 @@ public class main {
                 TreeNode newNode = TreeOperations.cutTreeToSubTree(treeList.get(menuIndex));
                 if (newNode != null) TreeGraph.print(newNode);
                 break;
+            case 7:             
+                System.out.print("Ratio: ");
+                menuIndex = selectItemFromMenu();
+                TreeGraph.print(TreeOperations.findConsensusTree(treeList, menuIndex));
+                break;
             case 9:
                 exit = true;
                 break;

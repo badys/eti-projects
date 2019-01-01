@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -29,10 +30,11 @@ public class Division {
         Arrays.sort(this.B);
     }
 
-    public static boolean equals(Division first, Division second) {
-        return Arrays.equals(first.A, second.A) && Arrays.equals(first.B, second.B);
+    @Override 
+    public boolean equals(Object o) {
+        return Arrays.equals(A, ((Division)o).A) && Arrays.equals(B, ((Division)o).B);
     }
-    
+   
     public static boolean validate(Division first, Division second) {
         int cnt = 0;
         List<String> A = new ArrayList<>(Arrays.asList(first.A));
@@ -100,6 +102,15 @@ public class Division {
         return B;
     }
     
+    
+    
+   
+    @Override    
+    public int hashCode() {   
+        String string = Arrays.stream(A).collect(Collectors.joining(""));
+        //System.out.println(string.hashCode());
+        return string.hashCode();    
+    } 
     
 }
     
