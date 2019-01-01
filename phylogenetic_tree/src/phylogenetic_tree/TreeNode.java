@@ -2,6 +2,7 @@ package phylogenetic_tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -19,7 +20,8 @@ public class TreeNode {
     }
 
     public TreeNode(TreeNode node) {
-        this.children = node.children;
+        this.children = node.children.stream().map(child -> new TreeNode(child)).collect(Collectors.toList());
+        this.children.forEach(child -> child.setParent(this));
         this.parent = node.parent;
         this.weight = node.weight;
         this.name = node.name;
