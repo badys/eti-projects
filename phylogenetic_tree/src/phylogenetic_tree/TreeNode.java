@@ -18,6 +18,14 @@ public class TreeNode {
     public TreeNode() {
     }
 
+    public TreeNode(TreeNode node) {
+        this.children = node.children;
+        this.parent = node.parent;
+        this.weight = node.weight;
+        this.name = node.name;
+        this.rawFormat = node.rawFormat;
+    }
+
     public TreeNode(String name) {
         int idx = name.indexOf(':');
         if (idx == -1) {

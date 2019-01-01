@@ -319,40 +319,105 @@ public class TreeOperations {
         }
         retList.sort(Comparator.naturalOrder());
         return retList.stream().distinct().collect(Collectors.toList());
-    }
-
+    }    
+    
     public static TreeNode cutTreeToSubTree(TreeNode root) {
         main.scanner.nextLine(); //reset scanner
         TreeGraph.print(root);
-        TreeNode[] nodeArray = TreeParser.convertTreeNodesToArray(root);
+        TreeNode rootClone = new TreeNode(root);
+        TreeNode[] nodeArray = TreeParser.convertTreeNodesToArray(rootClone);
         List<String> leavesArray = getLeavesNames(nodeArray);
+        List<Division> triviallyDivided = divideTreeTrivially(rootClone);
+        List<String[]> divisionsArray = new ArrayList();
+        triviallyDivided.stream().forEach(x -> {
+            divisionsArray.add(x.A);
+            divisionsArray.add(x.B);
+        });
+
         //Collecting characters only matching leaves names
-        List<String> distinctList = new ArrayList();
-        while (distinctList.isEmpty()) {
+        String[] distinctList;
+        do {
             System.out.println("Pick leaves to create subtree");
             String selectedLeaves = main.scanner.nextLine().replaceAll(" ", "");
             distinctList = Arrays.stream(selectedLeaves.split(""))
                     .filter(single_char -> leavesArray.stream().anyMatch(leaf -> leaf.equalsIgnoreCase(single_char)))
                     .distinct()
                     .map(String::toUpperCase) // uppercasing for easier sort
-                    .collect(Collectors.toList());
-
-            if (distinctList.isEmpty()) {
+                    .toArray(String[]::new);
+            if (distinctList.length == 0) {
                 System.out.println("Input doesn't match any of the leaves !");
             }
-        }
-        distinctList.sort(Comparator.naturalOrder()); //sorting
-        List<String> selectedLeaves = distinctList; // making variable effectively final
-        TreeNode leftNode = Arrays.stream(nodeArray)
-                .filter(node -> Arrays.equals(getChildNames(node).toArray(), selectedLeaves.toArray()))
+        } while (distinctList.length == 0);
+        Arrays.sort(distinctList);
+        String[] finalList = distinctList;
+        String[] divA = divisionsArray.stream()
+                .filter(x -> Arrays.equals(x, finalList))
                 .findFirst()
                 .orElse(null);
-        
-        if (leftNode == null) {
-            System.out.println("Selected tree was not possible to cut");
-        }
 
-        return leftNode;
+        if (divA == null) {
+            System.out.println("Selected tree was not possible to cut");
+            return null;
+        }
+        TreeNode newTree = new TreeNode();
+
+        List<String> t = new ArrayList(Arrays.asList(divA));
+        List<TreeNode> p = Arrays.stream(nodeArray)
+                .filter(node -> t.contains(node.getName()))
+                .collect(Collectors.toList());
+
+        p.forEach(treeNodeFromArray -> {
+            if (t.contains(treeNodeFromArray.getName())) {
+                TreeNode parent = treeNodeFromArray.getParent();
+                List<TreeNode> topLevelChildren = parent.getChildren().stream()
+                        .filter(child -> t.contains(child.getName()))
+                        .collect(Collectors.toList());
+                List<TreeNode> subChilds = parent.getChildren().stream()
+                        .filter(child -> "".equals(child.getName()))
+                        .collect(Collectors.toList());
+                if (!subChilds.isEmpty()) {
+                    List<TreeNode> retList = expandTreeUsingChildrenList(subChilds, t);
+                    newTree.addChildren(topLevelChildren);
+                    if (!retList.isEmpty()) {
+                        newTree.addChildren(retList);
+                    }
+                } else {
+                    newTree.addChildren(topLevelChildren);
+                }
+                t.removeAll(topLevelChildren.stream().map(TreeNode::getName).collect(Collectors.toList()));
+            }
+        });
+
+        return newTree;
+    }
+    
+    private static List<TreeNode> expandTreeUsingChildrenList(List<TreeNode> subChilds, List<String> t) {
+            List<TreeNode> namelessNodesList = new ArrayList();
+            subChilds.forEach(subChild -> {
+                TreeNode namelessNode = new TreeNode();
+                boolean shouldAdd = false;
+                List<TreeNode> children = subChild.getChildren().stream().filter(child -> t.contains(child.getName())).collect(Collectors.toList());
+                if (!children.isEmpty()) {
+                    namelessNode.addChildren(children);
+                    t.removeAll(children.stream().map(TreeNode::getName).collect(Collectors.toList()));
+                    shouldAdd = true;
+                }
+                List<TreeNode> subSubChilds = subChild.getChildren().stream().filter(child -> "".equals(child.getName())).collect(Collectors.toList());
+                if (!subSubChilds.isEmpty()) {
+                    List<TreeNode> retList = expandTreeUsingChildrenList(subSubChilds, t);
+                    if (namelessNode.getChildren().isEmpty()) {
+                        namelessNodesList.addAll(retList);
+                        shouldAdd = false;
+                    } else {
+                        namelessNode.addChildren(retList);
+                        shouldAdd = true;
+                    }   
+                }
+                if (shouldAdd) {
+                    namelessNodesList.add(namelessNode);
+                }
+            });
+            return namelessNodesList;
     }
     
 }
