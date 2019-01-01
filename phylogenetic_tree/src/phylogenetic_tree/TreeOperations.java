@@ -190,7 +190,9 @@ public class TreeOperations {
         } 
 
         TreeNode consensusTree = new TreeNode();
-        reconstrucTreeFromDivisionSet(consensus, new ArrayList<String>(), consensusTree, 0);
+        if (!consensus.isEmpty()) {
+            reconstrucTreeFromDivisionSet(consensus, new ArrayList<String>(), consensusTree, 0);
+        }
         return consensusTree;
     }
     
@@ -301,25 +303,7 @@ public class TreeOperations {
                 names.add(n.getName());
         });
         return names;
-    }
-    
-    private static List<String> getChildNames(TreeNode node) {
-        List<String> retList = new ArrayList();
-        if (node.getChildren() != null && !node.getChildren().isEmpty()) {
-            node.getChildren().stream().forEach(child -> {
-                //retList.add(!"".equals(child.getName()) ? child.getName() : " ");
-                if(!"".equals(child.getName())) {
-                    retList.add(child.getName());
-                }
-                retList.addAll(getChildNames(child));
-            });
-        }
-        if (!"".equals(node.getName())) {
-            retList.add(node.getName());
-        }
-        retList.sort(Comparator.naturalOrder());
-        return retList.stream().distinct().collect(Collectors.toList());
-    }    
+    } 
     
     public static TreeNode cutTreeToSubTree(TreeNode root) {
         main.scanner.nextLine(); //reset scanner
