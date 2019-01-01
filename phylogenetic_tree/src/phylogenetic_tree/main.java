@@ -20,7 +20,11 @@ public class main {
     private static String fileName = "";
 
     public static void main(String[] args) {
-        fileName = "file.txt";
+        if (args.length == 0) {
+            System.out.println("Input file name !");
+            return;
+        }
+        fileName = args[0];
         readFile(fileName);
         while (!exit) {
             showMenu();
