@@ -150,26 +150,21 @@ public class TreeOperations {
         } 
 
         TreeNode consensusTree = new TreeNode();
-        reconstrucTreeFromDivisionSet(consensus, new ArrayList<String>(), consensusTree);
+        reconstrucTreeFromDivisionSet(consensus, new ArrayList<String>(), consensusTree, 0);
         return consensusTree;
     }
     
-    public static List<String> reconstrucTreeFromDivisionSet(List<Division> divs, List<String> danglingLeaves, TreeNode node) {
+    public static List<String> reconstrucTreeFromDivisionSet(List<Division> divs, List<String> danglingLeaves, TreeNode node, int level) {
         
         if (danglingLeaves.isEmpty()) {
             // zero iteration
             danglingLeaves = divs.get(0).getAllLeaves();
-            TreeOperations.showDivisions(divs);
         }
 
         List<String> matchedLeaves = new ArrayList<String>();      
         List<String> leavesToMatch = danglingLeaves.stream()
                 .filter(x -> !matchedLeaves.contains(x))
                 .collect(Collectors.toList());
-        //System.out.println("** to match in node ** " + leavesToMatch);
-        
-        
-
         
         while(!leavesToMatch.isEmpty()) {
             
@@ -186,12 +181,8 @@ public class TreeOperations {
                     }
                 }
             }
-            // picked right division to perform further branching
-            //System.out.print("Pick >>> ");
-            pick.show();
 
             divs.remove(pick);
-
 
             if (maxVal == 1) {
                 // only leaves nodes to add
@@ -199,7 +190,6 @@ public class TreeOperations {
                     TreeNode leaf = new TreeNode(s);
                     node.addChild(leaf);
                     matchedLeaves.add(s);
-                    //System.out.println("Matched leaf: " + s);
                 }
 
                 return matchedLeaves; 
@@ -210,13 +200,22 @@ public class TreeOperations {
             
             TreeNode child = new TreeNode();
             node.addChild(child);
-            List<String> matched = reconstrucTreeFromDivisionSet(divs, childsDanglingLeaves, child);
+            List<String> matched = reconstrucTreeFromDivisionSet(divs, childsDanglingLeaves, child, level+1);
             matchedLeaves.addAll(matched);
             leavesToMatch = danglingLeaves.stream()
                 .filter(x -> !matchedLeaves.contains(x))
                 .collect(Collectors.toList());
-            //System.out.println(matched + ", still to match: " + leavesToMatch);
             
+            if (level == 0) {
+                // root the tree
+                TreeNode otherChild = new TreeNode();
+                node.addChild(otherChild);
+                matched = reconstrucTreeFromDivisionSet(divs, Arrays.asList(pick.B).stream().collect(Collectors.toList()), otherChild, level+1);
+                matchedLeaves.addAll(matched);
+                leavesToMatch = danglingLeaves.stream()
+                    .filter(x -> !matchedLeaves.contains(x))
+                    .collect(Collectors.toList());
+            }
         }
         return matchedLeaves;
     }

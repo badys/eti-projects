@@ -83,7 +83,7 @@ public class main {
                 System.out.print("Select tree: ");
                 menuIndex = selectItemFromMenu() - 1;
                 TreeNode reconstructedTree = new TreeNode();
-                TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), reconstructedTree);
+                TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), reconstructedTree, 0);
                 TreeGraph.print(reconstructedTree);
                 break;
             case 6:
