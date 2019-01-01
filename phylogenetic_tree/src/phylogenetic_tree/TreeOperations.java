@@ -95,14 +95,54 @@ public class TreeOperations {
                 divisions.add(new Division(left.toArray(new String[left.size()]),
                         union.toArray(new String[union.size()])));
             }
-            
-            //System.out.println("<node " + tn.getName() + "> " +left + " : " + union);
         }
-        
-        
+
         return divisions;
     }
     
+    public static TreeNode findExpansionTree(List<TreeNode> treeList) {
+        
+        
+        List<List<Division>> fullSet = new ArrayList<List<Division>>();
+        List<Division> expansion = new ArrayList<Division>();
+        
+        List<String> listA = getLeavesNames(TreeParser.convertTreeNodesToArray(treeList.get(0)));
+        Collections.sort(listA);
+        
+        for(TreeNode node : treeList) {
+            List<String> listB = getLeavesNames(TreeParser.convertTreeNodesToArray(treeList.get(0)));
+            Collections.sort(listB);
+            if (!Arrays.equals(listA.toArray(), listB.toArray())) {
+                System.err.println("Error: Leaves for both trees differ!");
+                return new TreeNode();
+            }
+            fullSet.add(divideTreeTrivially(node));
+            
+        }
+        Map<Division, Integer> hm = new HashMap<Division, Integer>(); 
+  
+        for(List<Division> dl : fullSet) {
+            for (Division d : dl) {
+                if (hm.get(d) == null)
+                    hm.put(d, 1);
+            }
+        }
+  
+        // displaying the occurrence of elements in the arraylist 
+        for (Map.Entry<Division, Integer> val : hm.entrySet()) { 
+            val.getKey().show();
+            expansion.add(val.getKey());
+        }
+
+        if (!Division.validateDivisionSet(expansion)) {
+            System.out.println("Error: Invalid division set, cannot create expansion tree");
+            return null;
+        }
+
+        TreeNode expansionTree = new TreeNode();
+        reconstrucTreeFromDivisionSet(expansion, new ArrayList<String>(), expansionTree, 0);
+        return expansionTree;
+    }
     public static TreeNode findConsensusTree(List<TreeNode> treeList, int ratio) {
         
         
