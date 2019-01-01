@@ -25,7 +25,7 @@ public class TreeOperations {
         
         TreeNode[] nodesA = TreeParser.convertTreeNodesToArray(A);
         List<String> listA = getLeavesNames(nodesA);
-        TreeNode[] nodesB = TreeParser.convertTreeNodesToArray(A);
+        TreeNode[] nodesB = TreeParser.convertTreeNodesToArray(B);
         List<String> listB = getLeavesNames(nodesB);
         
         Collections.sort(listA);
