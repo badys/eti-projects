@@ -15,12 +15,13 @@ public class TreeGraph {
     public static final String VERTICAL = "\u2502";
 
     public static void print(TreeNode root) {
+        System.out.println("");
         print(root, "", true);
     }
 
     private static void print(TreeNode root, String prefix, boolean isTail) {
         String tail = TAIL + HORIZONTAL + " ";
-        String spaces = "      ";
+        String spaces = "    ";
         if (!isTail) {
             tail = VERTICALWITHLINE + HORIZONTAL + HORIZONTAL + " ";
         }
