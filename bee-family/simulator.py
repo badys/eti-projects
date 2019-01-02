@@ -38,6 +38,9 @@ def simulate(data_set):
     queen = QueenBee(SIMUATION_TIME, rand.randint(400, 800)/100, rand.randint(120,130), rand.randint(150, 230))
     hive = Hive(SIMUATION_TIME, [0, 310, 207, None, 100, 100, 200])
 
+    out_population = None
+    out_honey = None
+
     average_flights_num = 10
     average_gather_to_weight_ratio = 0.1
 
@@ -58,7 +61,7 @@ def simulate(data_set):
     c8 = .2
     c9 = .18
 
-    c10 = .2
+    c10 = .08
     c11 = .006
     c12 = 0.5
     c13 = 0.2
@@ -204,6 +207,7 @@ def simulate(data_set):
                 famine = {'start_day': day, 'end_day': None}
             elif day - famine.get('start_day') > MAX_FAMINE_PERIOD:
                 log.critical(" ☠️ ")
+                out_population = 0
                 break
         elif famine is not None:
             famine = None
@@ -220,6 +224,7 @@ def simulate(data_set):
 
 
 
+        #hive.u2P[day], hive.x25[day] = distribute_resources(hive.u2P[day], hive.x15[day])
         hive.u2P[day], hive.x25[day] = distribute_resources(hive.u2P[day], hive.x25[day])
 
         hive.u11_2[day] = hive.u11[day] - (hive.x11[day] + hive.x12[day] + hive.x13[day] + hive.x14[day] + hive.x15[day])
@@ -240,9 +245,12 @@ def simulate(data_set):
             # hive.u12[day] += hive.u11_2[day]
 
 
-        hive.sy[day] = c17 * hive.y[day] + hive.y1[day] + hive.y2[day]
-        hive.su[day] = c18 * (2 * hive.u11[day] + hive.u12[day] + hive.u2P[day])
- 
+        out_population = hive.sy[day] = c17 * hive.y[day] + hive.y1[day] + hive.y2[day]
+        out_honey = hive.su[day] = c18 * (2 * hive.u11[day] + hive.u12[day] + hive.u2P[day])
+
+
+        log.warning("SY = %d, SU = %d" % (hive.sy[day], hive.su[day]))
+        
 
         """ ---------------------------------------------------------------------------- """
 
@@ -258,7 +266,15 @@ def simulate(data_set):
     ax[3][1].plot(hive.y4)
     ax[4][1].plot(hive.y5)
     ax[5][1].plot([sum(x) for x in zip(hive.y6Q, hive.y6V)])
-    plt.show()
+    #plt.show()
+
+    
+
+    data = {'i_queenA' : queen.A, 'i_queenC' : queen.C, 'i_queenKcrit' : queen.k_crit, "o_population" : out_population, "o_honey" : out_honey}
+    
+    return data
+    
+    
 
 
 def distribute_resources(resource, demand):
@@ -274,13 +290,21 @@ def distribute_resources(resource, demand):
     return resource, usage
 
 if __name__ == "__main__":
-    simulate({
-        "enviroment" : {
-            "nectar": 100,
-            "pollen": 150,
-            "temperature": 24,
-        },
-        "bee" : {
-            "flight_distance" : 3000,
-        }
-    })
+    
+    
+    from yaml import dump
+    for i in range(1000):
+        data = simulate({
+            "enviroment" : {
+                "nectar": 100,
+                "pollen": 150,
+                "temperature": 24,
+            },
+            "bee" : {
+                "flight_distance" : 3000,
+            }
+        })
+
+        
+        stream = open('data/document{}.yaml'.format(i), 'w')
+        dump(data, stream)
