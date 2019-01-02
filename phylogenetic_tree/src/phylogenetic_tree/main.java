@@ -2,6 +2,7 @@ package phylogenetic_tree;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +25,20 @@ public class main {
             System.out.println("Input file name !");
             return;
         }
-        fileName = args[0];
-        readFile(fileName);
+        try {
+            fileName = args[0];
+            readFile(fileName);
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+            return;
+        }
         while (!exit) {
             showMenu();
         }
         closeProgram();
     }
 
-    private static void readFile(String fileName) {
+    private static void readFile(String fileName) throws FileNotFoundException {
         File file = new File(fileName);
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -43,8 +49,7 @@ public class main {
                 treeList.add(treeParser.readNewickFormat(list.get(i - 1)));
             }
         } catch (Exception e) {
-            System.out.println("Error while reading file " + fileName);
-            e.printStackTrace();
+            throw new FileNotFoundException();
         }
     }
 
