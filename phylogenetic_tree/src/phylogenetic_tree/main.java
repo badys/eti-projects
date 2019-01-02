@@ -96,7 +96,7 @@ public class main {
                 TreeOperations.reconstrucTreeFromDivisionSet(TreeOperations.divideTreeTrivially(treeList.get(menuIndex)), new ArrayList<String>(), reconstructedTree, 0);
                 TreeGraph.print(reconstructedTree);
                 break;
-            case 6:
+            case 0:
                 System.out.print("Select tree: ");
                 menuIndex = selectTreeFromList();
                 TreeNode newNode = TreeOperations.cutTreeToSubTree(treeList.get(menuIndex));
@@ -113,6 +113,15 @@ public class main {
                 break;
             case 9:
                 exit = true;
+                break;
+            case 6:
+                System.out.print("Select tree: ");
+                menuIndex = selectTreeFromList();
+                List<Division> lista = TreeOperations.cutPls(treeList.get(menuIndex));
+                TreeOperations.showDivisions(lista);
+                TreeNode rdy = new TreeNode();
+                TreeOperations.reconstrucTreeFromDivisionSet(lista, new ArrayList<String>(), rdy, 0);
+                TreeGraph.print(rdy);
                 break;
             default:
                 System.out.println("Menu doesn't have such number !");

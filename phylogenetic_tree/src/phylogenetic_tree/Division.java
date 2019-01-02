@@ -35,6 +35,10 @@ public class Division {
         return Arrays.equals(A, ((Division)o).A) && Arrays.equals(B, ((Division)o).B);
     }
    
+    public Division flip() {
+        return new Division(B, A);
+    }
+    
     public static boolean validate(Division first, Division second) {
         int cnt = 0;
         List<String> A = new ArrayList<>(Arrays.asList(first.A));

@@ -123,8 +123,9 @@ public class TreeOperations {
   
         for(List<Division> dl : fullSet) {
             for (Division d : dl) {
-                if (hm.get(d) == null)
+                if (hm.get(d) == null && hm.get(d.flip()) == null) {
                     hm.put(d, 1);
+                }
             }
         }
   
@@ -166,10 +167,14 @@ public class TreeOperations {
   
         for(List<Division> dl : fullSet) {
             for (Division d : dl) {
-                if (hm.get(d) == null)
+                if (hm.get(d) == null && hm.get(d.flip()) == null)
                     hm.put(d, 1);
-                else
-                    hm.put(d, hm.get(d) + 1);
+                else {
+                    if (hm.get(d) != null)
+                        hm.put(d, hm.get(d) + 1);
+                    else
+                        hm.put(d.flip(), hm.get(d.flip()) + 1);
+                }
                 
             }
         }
@@ -249,14 +254,29 @@ public class TreeOperations {
                 .collect(Collectors.toList());
             
             if (level == 0) {
-                // root the tree
-                TreeNode otherChild = new TreeNode();
-                node.addChild(otherChild);
-                matched = reconstrucTreeFromDivisionSet(divs, Arrays.asList(pick.B).stream().collect(Collectors.toList()), otherChild, level+1);
-                matchedLeaves.addAll(matched);
-                leavesToMatch = danglingLeaves.stream()
-                    .filter(x -> !matchedLeaves.contains(x))
-                    .collect(Collectors.toList());
+                //System.out.println("root the tree");
+                //showDivisions(divs);
+                maxVal = 0;
+                for(Division d : divs) {     
+                    if (leavesToMatch.containsAll(Arrays.asList(d.A))) {
+                        // division is further branching in same direction
+                        // check if it is "the biggest"
+                        if (d.A.length > maxVal) {
+                             maxVal = d.A.length;
+                        }
+                    }
+                }
+                
+                //System.out.println(maxVal);
+                if (maxVal != 1){
+                    TreeNode otherChild = new TreeNode();
+                    node.addChild(otherChild);
+                    matched = reconstrucTreeFromDivisionSet(divs, Arrays.asList(pick.B).stream().collect(Collectors.toList()), otherChild, level+1);
+                    matchedLeaves.addAll(matched);
+                    leavesToMatch = danglingLeaves.stream()
+                        .filter(x -> !matchedLeaves.contains(x))
+                        .collect(Collectors.toList());
+                }
             }
         }
         return matchedLeaves;
@@ -304,6 +324,45 @@ public class TreeOperations {
         });
         return names;
     } 
+    
+    public static List<Division> cutPls(TreeNode root) {
+        TreeNode cut = new TreeNode();
+        List<Division> divs = divideTreeTrivially(root);
+        List<Division> afterCut = new ArrayList<>();
+       
+        main.scanner.nextLine(); //reset scanner
+        String[] distinctList;
+        do {
+            System.out.println("Pick leaves to create subtree");
+            String selectedLeaves = main.scanner.nextLine().replaceAll(" ", "");
+            distinctList = Arrays.stream(selectedLeaves.split(""))
+                    .distinct()
+                    .map(String::toUpperCase) // uppercasing for easier sort
+                    .toArray(String[]::new);
+            if (distinctList.length == 0) {
+                System.out.println("Input doesn't match any of the leaves !");
+            }
+        } while (distinctList.length == 0);
+        Arrays.sort(distinctList);
+        
+        TreeNode[] nodeArray = TreeParser.convertTreeNodesToArray(root);
+        List<String> leavesArray = getLeavesNames(nodeArray);
+        leavesArray.removeAll(Arrays.asList(distinctList));
+        for(Division d : divs) {
+            List<String> A = new ArrayList(Arrays.asList(d.A));
+            List<String> B = new ArrayList(Arrays.asList(d.B));
+            A.removeAll(leavesArray);      
+            B.removeAll(leavesArray);
+            
+            if (!A.isEmpty() && !B.isEmpty())
+                afterCut.add(new Division(A.toArray(new String[A.size()]), B.toArray(new String[B.size()])));
+        }
+        
+        afterCut = afterCut.stream().distinct().collect(Collectors.toList());
+        
+        return afterCut;
+        
+    }
     
     public static TreeNode cutTreeToSubTree(TreeNode root) {
         main.scanner.nextLine(); //reset scanner
@@ -353,6 +412,9 @@ public class TreeOperations {
         p.forEach(treeNodeFromArray -> {
             if (t.contains(treeNodeFromArray.getName())) {
                 TreeNode parent = treeNodeFromArray.getParent();
+                while (parent.getParent() != null) {
+                    parent = parent.getParent();
+                }
                 List<TreeNode> topLevelChildren = parent.getChildren().stream()
                         .filter(child -> t.contains(child.getName()))
                         .collect(Collectors.toList());
