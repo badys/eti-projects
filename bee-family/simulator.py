@@ -89,7 +89,6 @@ def simulate(data_set):
     ###
 
     for day in range(SIMUATION_TIME):
-        print("*********************")
         log.info("DAY %d" % day)
         
         if day > 0:
@@ -202,11 +201,11 @@ def simulate(data_set):
         hive.u1_1[day] = hive.u11[day] + hive.u12[day] - (hive.x11[day] + hive.x12[day] + hive.x13[day] + hive.x14[day])
         
         if hive.u2P_1[day] <= 0 or hive.u1_1[day] <= 0:
-            log.error("u2P_1 == %4.4f, u1_1 == %4.4f" % (hive.u2P_1[day], hive.u1_1[day]))
+            log.warning("u2P_1 == %4.4f, u1_1 == %4.4f" % (hive.u2P_1[day], hive.u1_1[day]))
             if famine is None:
                 famine = {'start_day': day, 'end_day': None}
             elif day - famine.get('start_day') > MAX_FAMINE_PERIOD:
-                log.critical(" ☠️ ")
+                log.warning(" ☠️ ")
                 out_population = 0
                 break
         elif famine is not None:
@@ -292,6 +291,7 @@ def distribute_resources(resource, demand):
 if __name__ == "__main__":
     
     
+    stream = open('data/document.yaml', 'w')
     from yaml import dump
     for i in range(1000):
         data = simulate({
@@ -304,7 +304,4 @@ if __name__ == "__main__":
                 "flight_distance" : 3000,
             }
         })
-
-        
-        stream = open('data/document{}.yaml'.format(i), 'w')
         dump(data, stream)

@@ -14,8 +14,7 @@ class QueenBee:
         # calculates how many eggs can be layed by queen bee
         avg_excessive_food = sum(x13[max(day-9, 0):day+1]) / 10
         if (avg_excessive_food <= 0):
-            log.error("no food left")
-        print("sum_x13 %f" % avg_excessive_food)
+            log.warning("no food left")
         eggs = (avg_excessive_food * self.A + self.C) * self.b[day]
         log.info("layEggs: queen bee layed %d eggs", eggs)
         if eggs > 2000 + self.C: 
