@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 from hive import Hive
 import enviroment
 from queen import QueenBee
+import click
+import time
+from tqdm import tqdm
 
 log = getBeeLogger()
 
@@ -15,27 +18,23 @@ SIMUATION_TIME = 200
 
 MAX_FAMINE_PERIOD = 5
 
-def simulate(data_set):
 
-    assert isinstance(data_set, dict)
+QUEEN_A_MAX = 4
+QUEEN_C_MAX = 100
+QUEEN_CRIT_MAX = 250
+
+
+
+
+def simulate(A, C, crit):
 
     env = None
     hive = None
     queen = None
 
-    if not data_set.get("enviroment"):
-        raise AttributeError("Data set has to include \"enviroment\" section!")
-    else:
-        env = enviroment.Enviroment(
-            data_set.get("enviroment").get("nectar"),
-            data_set.get("enviroment").get("pollen"),
-            data_set.get("bee").get("flight_distance"),
-            data_set.get("enviroment").get("temperature")
-        )
+    env = enviroment.Enviroment(100, 150, 3000, 24)
 
-    #print(str(env))
-
-    queen = QueenBee(SIMUATION_TIME, rand.randint(400, 800)/100, rand.randint(120,130), rand.randint(150, 230))
+    queen = QueenBee(SIMUATION_TIME, A, C, crit)
     hive = Hive(SIMUATION_TIME, [0, 310, 207, None, 100, 100, 200])
 
     out_population = None
@@ -254,27 +253,30 @@ def simulate(data_set):
         """ ---------------------------------------------------------------------------- """
 
     log.info("queen params: A=%f, C=%d" % (queen.A, queen.C))
-    fig, ax = plt.subplots(6, 2, sharex=True)
-    ax[0][0].plot(hive.y3)
-    ax[1][0].plot(hive.dy)
-    ax[2][0].plot([sum(x) for x in zip(hive.u11, hive.u12)])
-    ax[3][0].plot(hive.u2P)
-    ax[0][1].plot(hive.y)
-    ax[1][1].plot(hive.y1)
-    ax[2][1].plot(hive.y2)
-    ax[3][1].plot(hive.y4)
-    ax[4][1].plot(hive.y5)
-    ax[5][1].plot([sum(x) for x in zip(hive.y6Q, hive.y6V)])
+    # fig, ax = plt.subplots(6, 2, sharex=True)
+    # ax[0][0].plot(hive.y3)
+    # ax[1][0].plot(hive.dy)
+    # ax[2][0].plot([sum(x) for x in zip(hive.u11, hive.u12)])
+    # ax[3][0].plot(hive.u2P)
+    # ax[0][1].plot(hive.y)
+    # ax[1][1].plot(hive.y1)
+    # ax[2][1].plot(hive.y2)
+    # ax[3][1].plot(hive.y4)
+    # ax[4][1].plot(hive.y5)
+    # ax[5][1].plot([sum(x) for x in zip(hive.y6Q, hive.y6V)])
     #plt.show()
 
     
 
-    data = {'i_queenA' : queen.A, 'i_queenC' : queen.C, 'i_queenKcrit' : queen.k_crit, "o_population" : out_population, "o_honey" : out_honey}
+    data = {'i_queenA' : queen.A,
+            'i_queenC' : queen.C,
+            'i_queenKcrit' : queen.k_crit,
+            "o_population" : out_population,
+            "o_honey" : out_honey,
+            "mark" : 1 if out_population >= 20000 else 0,
+            }
     
     return data
-    
-    
-
 
 def distribute_resources(resource, demand):
     assert demand >= 0, "Error: Negative demands!"
@@ -288,20 +290,34 @@ def distribute_resources(resource, demand):
         resource -= usage
     return resource, usage
 
-if __name__ == "__main__":
-    
-    
-    stream = open('data/document.yaml', 'w')
-    from yaml import dump
-    for i in range(1000):
-        data = simulate({
-            "enviroment" : {
-                "nectar": 100,
-                "pollen": 150,
-                "temperature": 24,
-            },
-            "bee" : {
-                "flight_distance" : 3000,
-            }
-        })
-        dump(data, stream)
+
+@click.command()
+@click.argument('outfile', type=click.File('w'))
+@click.option('--iters', default=1000, help='number of iterations for data generation')
+def main(iters, outfile):
+    generate_data(stream=outfile, iters=iters)
+
+def generate_data(stream, iters=1000):
+    import yaml
+    documents = []
+    for _ in tqdm(range(iters)):
+        data = simulate(rand.randint(0, QUEEN_A_MAX*100)/100,
+                        rand.randint(0, QUEEN_C_MAX),
+                        rand.randint(100, QUEEN_CRIT_MAX)) #rand.randint(150, 250))
+        documents.append(data)
+    yaml.dump_all(documents, stream)
+
+    # import numpy as np
+    # xs = np.zeros(iters)
+    # ys = np.zeros(iters)
+    # zs = np.zeros(iters)
+
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # ax.scatter(xs, ys, zs, c=c, marker=m)
+    # plt.show()
+
+
+
+if __name__ == '__main__':
+    main()
