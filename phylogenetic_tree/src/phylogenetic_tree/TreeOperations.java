@@ -252,32 +252,7 @@ public class TreeOperations {
             leavesToMatch = danglingLeaves.stream()
                 .filter(x -> !matchedLeaves.contains(x))
                 .collect(Collectors.toList());
-            
-            if (level == 0) {
-                //System.out.println("root the tree");
-                //showDivisions(divs);
-                maxVal = 0;
-                for(Division d : divs) {     
-                    if (leavesToMatch.containsAll(Arrays.asList(d.A))) {
-                        // division is further branching in same direction
-                        // check if it is "the biggest"
-                        if (d.A.length > maxVal) {
-                             maxVal = d.A.length;
-                        }
-                    }
-                }
-                
-                //System.out.println(maxVal);
-                if (maxVal != 1){
-                    TreeNode otherChild = new TreeNode();
-                    node.addChild(otherChild);
-                    matched = reconstrucTreeFromDivisionSet(divs, Arrays.asList(pick.B).stream().collect(Collectors.toList()), otherChild, level+1);
-                    matchedLeaves.addAll(matched);
-                    leavesToMatch = danglingLeaves.stream()
-                        .filter(x -> !matchedLeaves.contains(x))
-                        .collect(Collectors.toList());
-                }
-            }
+
         }
         return matchedLeaves;
     }
