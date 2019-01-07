@@ -16,22 +16,19 @@ public class TreeGraph {
 
     public static void print(TreeNode root) {
         System.out.println("");
-        print(root, "", true);
+        root.getChildren().forEach(tree -> print(tree, ""));
     }
 
-    private static void print(TreeNode root, String prefix, boolean isTail) {
-        String tail = TAIL + HORIZONTAL + " ";
+    private static void print(TreeNode root, String prefix) {
+        String tail = VERTICALWITHLINE + HORIZONTAL + HORIZONTAL + " ";
         String spaces = "    ";
-        if (!isTail) {
-            tail = VERTICALWITHLINE + HORIZONTAL + HORIZONTAL + " ";
-        }
         System.out.println(prefix + tail + root.getName());
         List<TreeNode> children = root.getChildren();
         if (children == null) {
             return;
         }
         String whitespaces = spaces;
-        children.forEach(child -> print(child, prefix + (isTail ? "    " : VERTICAL + whitespaces), false));
+        children.forEach(child -> print(child, prefix + VERTICAL + whitespaces));
     }
 
     public static void printTreeListInRawFormat(List<TreeNode> treeList) {
