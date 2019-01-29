@@ -18,12 +18,9 @@ SIMUATION_TIME = 200
 
 MAX_FAMINE_PERIOD = 5
 
-
 QUEEN_A_MAX = 4
 QUEEN_C_MAX = 100
 QUEEN_CRIT_MAX = 250
-
-
 
 
 def simulate(A, C, crit):
@@ -108,7 +105,6 @@ def simulate(A, C, crit):
 
         log.info("🥚 x %d, 🐛 x %d, 🐜 x %d, 🐝 x %d (%d, %d, %d)" % (hive.y[day], hive.y1[day], hive.y2[day], hive.y3[day], hive.y4[day], hive.y5[day], hive.y6Q[day] + hive.y6V[day]))
 
-
         # do supply flights
         hive.u1[day] = c1 * average_flights_num * average_gather_to_weight_ratio * hive.y6Q[day]
         hive.u2[day] = c2 * average_flights_num * average_gather_to_weight_ratio * hive.y6V[day]
@@ -131,9 +127,7 @@ def simulate(A, C, crit):
 
         log.debug("resources: u11: %4.4f, u12: %4.4f, u2P: %4.4f" % (hive.u11[day], hive.u12[day], hive.u2P[day]))
 
-
         """ ----------------------- calculate resource demand -------------------------- """
-        
 
         n = 4
         # calculate the building related stuff
@@ -152,7 +146,6 @@ def simulate(A, C, crit):
         hive.x14d[day] = c7 * hive.y5[day] if (hive.u3[day]) > 0 else 0
 
         log.debug("demands: x11: %4.4f, x12: %4.4f, x13: %4.4f, x14: %4.4f," % (hive.x11d[day], hive.x12d[day], hive.x13d[day], hive.x14d[day]))
-
 
         ## CALCULATE ACTUAL NECTAR INTAKE (priority based):
         if hive.u11[day] >= (hive.x11d[day] + hive.x12d[day] + hive.x13d[day] + hive.x14d[day]):
@@ -253,18 +246,17 @@ def simulate(A, C, crit):
         """ ---------------------------------------------------------------------------- """
 
     log.info("queen params: A=%f, C=%d" % (queen.A, queen.C))
-    # fig, ax = plt.subplots(6, 2, sharex=True)
-    # ax[0][0].plot(hive.y3)
-    # ax[1][0].plot(hive.dy)
-    # ax[2][0].plot([sum(x) for x in zip(hive.u11, hive.u12)])
-    # ax[3][0].plot(hive.u2P)
-    # ax[0][1].plot(hive.y)
-    # ax[1][1].plot(hive.y1)
-    # ax[2][1].plot(hive.y2)
-    # ax[3][1].plot(hive.y4)
-    # ax[4][1].plot(hive.y5)
-    # ax[5][1].plot([sum(x) for x in zip(hive.y6Q, hive.y6V)])
-    #plt.show()
+    fig, ax = plt.subplots(4, sharex=True)
+    ax[0].set_ylabel("Populacja\nrodziny")
+    ax[1].set_ylabel("Nośność\nmatki pszczelej")
+    ax[2].set_ylabel("Zebrany\nnektar")
+    ax[3].set_ylabel("Zebrany\npyłek")
+    ax[3].set_xlabel("Dzień symulacji")
+    ax[0].plot(hive.sy)
+    ax[1].plot(hive.dy)
+    ax[2].plot([sum(x) for x in zip(hive.u11, hive.u12)])
+    ax[3].plot(hive.u2P)
+    plt.show()
 
     
 
